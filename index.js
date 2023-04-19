@@ -3,9 +3,11 @@ const { dbConnection } = require("./database/config");
 const cors = require('cors');
 require("dotenv").config();
 const path = require('path');
+const helmet = require('helmet');
 
 // Crear el servidor de express
 const app = express();
+app.use(helmet.hidePoweredBy());
 
 // Base de datos
 dbConnection();

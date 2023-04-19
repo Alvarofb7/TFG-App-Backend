@@ -1,7 +1,6 @@
-const { response } = require("express");
 const jwt = require("jsonwebtoken");
 
-const validarJWT = (req, resp = response, next) => {
+const validarJWT = (req, resp, next) => {
 
     // x-token headers
     const token = req.header("x-token");
@@ -14,8 +13,6 @@ const validarJWT = (req, resp = response, next) => {
     }
 
     try {
-
-        // const payload = jwt.verify(token, process.env.SECRET_JWT_SEED);
         const { uid, name } = jwt.verify(token, process.env.SECRET_JWT_SEED);
 
         req.uid = uid;

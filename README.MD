@@ -7,6 +7,8 @@ npm init -y
 npm i nodemon -g -> Ejecuta el comando "node index.js" cada vez que detecta un cambio, es de mucha utilidad durante el desarrollo
 ### Express
 npm i express
+### Helmet: colección de funciones de seguridad que ayuda a proteger la aplicación web
+npm i helmet
 ### Variables de entorno
 npm i dotenv
 ### Mongoose

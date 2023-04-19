@@ -27,7 +27,7 @@ router.post(
         check('password', 'La contraseña debe contener al menos una letra minúscula')
             .matches(/[a-z]/),
         check('password', 'La contraseña debe contener al menos un número')
-            .matches(/[0-9]/),
+            .matches(/\d/),
         check('password', 'La contraseña debe contener al menos un caracter especial ($!%*?-_&)')
             .matches(/[$!%*?-_&]/),
         validarCampos
@@ -47,7 +47,7 @@ router.post(
         check('password', 'La contraseña debe contener al menos una letra minúscula')
             .matches(/[a-z]/),
         check('password', 'La contraseña debe contener al menos un número')
-            .matches(/[0-9]/),
+            .matches(/\d/),
         check('password', 'La contraseña debe contener al menos un caracter especial ($!%*?-_&)')
             .matches(/[$!%*?-_&]/),
         validarCampos
