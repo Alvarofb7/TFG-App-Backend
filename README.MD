@@ -13,3 +13,9 @@ npm i express
 
 ### Variables de entorno
 npm i dotenv
+
+### Mongoose
+npm i mongoose
+
+### Cors
+npm i cors
