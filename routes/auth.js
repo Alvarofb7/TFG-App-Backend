@@ -15,7 +15,11 @@ const router = Router();
 router.post(
     "/new",
     [ //* Middlewares
-        check("name", "El nombre es obligatorio").not().isEmpty(),
+        check("name")
+            .trim()
+            .not().isEmpty().withMessage("El nombre es obligatorio")
+            .isLength({ min: 3, max: 20 }).withMessage('El nombre de usuario debe tener entre 3 y 20 caracteres')
+            .matches(/^[a-zA-Z0-9_-]+$/).withMessage('El nombre de usuario solo puede contener letras, números, guiones y guiones bajos'),
         check("email", "El email es obligatorio").isEmail(),
         check("password", "La contraseña debe de ser de tener entre 6 y 20 caracteres").isLength({ min: 6, max: 20 }),
         check('password', 'La contraseña debe contener al menos una letra mayúscula')
@@ -37,7 +41,15 @@ router.post(
     "/",
     [ //* Middlewares
         check("email", "El email es obligatorio").isEmail(),
-        check("password", "La contraseña debe de ser de 6 caracteres").isLength({ min: 6 }),
+        check("password", "La contraseña debe de ser de tener entre 6 y 20 caracteres").isLength({ min: 6, max: 20 }),
+        check('password', 'La contraseña debe contener al menos una letra mayúscula')
+            .matches(/[A-Z]/),
+        check('password', 'La contraseña debe contener al menos una letra minúscula')
+            .matches(/[a-z]/),
+        check('password', 'La contraseña debe contener al menos un número')
+            .matches(/[0-9]/),
+        check('password', 'La contraseña debe contener al menos un caracter especial ($!%*?-_&)')
+            .matches(/[$!%*?-_&]/),
         validarCampos
     ],
     loginUsuario
