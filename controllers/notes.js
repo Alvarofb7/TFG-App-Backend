@@ -7,6 +7,7 @@ const getNotes = async (req, resp = response) => {
     try {
         const { uid } = req;
         const notes = await Nota.find({ user: uid })
+            .sort({date: -1})
             .populate("user", "name");
 
         resp.status(200).json({
