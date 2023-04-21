@@ -40,15 +40,10 @@ router.post(
 router.post(
     "/",
     [ //* Middlewares
-        check("email", "El email es obligatorio").isEmail(),
-        check("password", "La contraseña debe de ser de tener entre 6 y 20 caracteres").isLength({ min: 6, max: 20 }),
-        check('password', 'La contraseña debe contener al menos una letra mayúscula')
-            .matches(/[A-Z]/),
-        check('password', 'La contraseña debe contener al menos una letra minúscula')
-            .matches(/[a-z]/),
-        check('password', 'La contraseña debe contener al menos un número')
-            .matches(/\d/),
-        check('password', 'La contraseña debe contener al menos un caracter especial ($!%*?-_&)')
+    check("email", "El email es obligatorio").isEmail(),
+    check("password", "La contraseña es obligatoria").not().isEmpty(),
+    check("password", "La contraseña debe de ser de tener entre 6 y 20 caracteres").isLength({ min: 6, max: 20 }),
+    check('password', 'La contraseña debe contener al menos un caracter especial ($!%*?-_&)')
             .matches(/[$!%*?-_&]/),
         validarCampos
     ],
