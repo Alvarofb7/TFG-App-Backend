@@ -1,17 +1,18 @@
 const { response } = require("express");
-const Evento = require("../models/Evento");
+const Nota = require("../models/Nota");
 
 
-const getEventos = async (req, resp = response) => {
+const getNotes = async (req, resp = response) => {
 
     try {
         const { uid } = req;
-        const events = await Evento.find({ user: uid })
+        const notes = await Nota.find({ user: uid })
+            .sort({date: -1})
             .populate("user", "name");
 
         resp.status(200).json({
             ok: true,
-            eventos: events
+            notes
         })
     } catch (error) {
         resp.status(500).json({
@@ -22,19 +23,17 @@ const getEventos = async (req, resp = response) => {
 
 }
 
-
-const createEvent = async (req, resp = response) => {
-
-    const event = new Evento(req.body);
+const createNote = async (req, resp = response) => {
+    const note = new Nota(req.body);
 
     try {
-        event.user = req.uid;
+        note.user = req.uid;
 
-        const eventSaved = await event.save();
+        const noteSaved = await note.save();
 
         resp.status(200).json({
             ok: true,
-            evento: eventSaved
+            note: noteSaved
         });
 
     } catch (error) {
@@ -44,43 +43,40 @@ const createEvent = async (req, resp = response) => {
             msg: "Hable con el administrador"
         });
     }
-
 }
 
-
-const updateEvent = async (req, resp = response) => {
+const updateNote = async (req, resp = response) => {
 
     const { uid } = req;
-    const eventId = req.params.id;
+    const noteId = req.params.id;
 
     try {
+        const note = await Nota.findById(noteId);
 
-        const event = await Evento.findById(eventId);
-
-        if (!event) {
+        if (!note) {
             return resp.status(404).json({
                 ok: false,
-                msg: "Evento no existe con ese id"
+                msg: "Nota no existe con ese id"
             });
         }
 
-        if (event.user.toString() !== uid) {
+        if (note.user.toString() !== uid) {
             return resp.status(401).json({
                 ok: false,
-                msg: "No tiene privilegio de editar este evento"
+                msg: "No tiene privilegio de editar esta nota"
             });
         }
 
-        const newEvent = {
+        const newNote = {
             ...req.body,
             user: uid
         }
 
-        const eventUpdated = await Evento.findByIdAndUpdate(eventId, newEvent, { new: true });
+        const noteUpdated = await Nota.findByIdAndUpdate(noteId, newNote, { new: true });
 
         resp.status(200).json({
             ok: true,
-            evento: eventUpdated,
+            nota: noteUpdated,
         });
 
     } catch (error) {
@@ -92,34 +88,34 @@ const updateEvent = async (req, resp = response) => {
     }
 }
 
-const deleteEvent = async (req, resp = response) => {
+const deleteNote = async (req, resp = response) => {
 
     const { uid } = req;
-    const eventId = req.params.id;
+    const noteId = req.params.id;
 
     try {
 
-        const event = await Evento.findById(eventId);
+        const note = await Nota.findById(noteId);
 
-        if (!event) {
+        if (!note) {
             return resp.status(404).json({
                 ok: false,
                 msg: "No existe un evento con ese id",
             })
         }
 
-        if (event.user.toString() !== uid) {
+        if (note.user.toString() !== uid) {
             return resp.status(400).json({
                 ok: false,
                 msg: " No tiene privilegios para eliminar este evento",
             })
         }
 
-        await Evento.findByIdAndDelete(eventId);
+        await Nota.findByIdAndDelete(noteId);
 
         resp.status(200).json({
             ok: true,
-            msg: "Evento eliminado"
+            msg: "Nota eliminada"
         })
 
     } catch (error) {
@@ -135,8 +131,8 @@ const deleteEvent = async (req, resp = response) => {
 
 
 module.exports = {
-    createEvent,
-    deleteEvent,
-    getEventos,
-    updateEvent      ,
+    createNote,
+    deleteNote,
+    getNotes,
+    updateNote,
 }
