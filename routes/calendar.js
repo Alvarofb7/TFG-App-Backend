@@ -7,7 +7,7 @@ const { check } = require("express-validator");
 
 const { validarJWT } = require("../middlewares/validar-jwt");
 const {
-	getEventos,
+	getEvents,
 	createEvent,
 	updateEvent,
 	deleteEvent,
@@ -20,7 +20,7 @@ const router = Router();
 router.use(validarJWT);
 
 // Obtener eventos
-router.get("/", getEventos);
+router.get("/", getEvents);
 
 // Crear evento
 router.post(
@@ -42,8 +42,8 @@ router.put(
 	"/:id",
 	[
 		check("title", "El título es obligatorio").not().isEmpty(),
-		check("notes", "La nota no puede tener más de 50 caracteres").isLength({
-			max: 50,
+		check("notes", "La nota no puede tener más de 100 caracteres").isLength({
+			max: 100,
 		}),
 		check("start", "Fecha de inicio es obligatoria").custom(isDate),
 		check("end", "Fecha de fin es obligatoria").custom(isDate),

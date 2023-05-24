@@ -1,142 +1,126 @@
 const { response } = require("express");
-const Evento = require("../models/Evento");
+const Event = require("../models/Event");
 
+const getEvents = async (req, resp = response) => {
+	try {
+		const { uid } = req;
+		const events = await Event.find({ user: uid }).populate("user", "name");
 
-const getEventos = async (req, resp = response) => {
-
-    try {
-        const { uid } = req;
-        const events = await Evento.find({ user: uid })
-            .populate("user", "name");
-
-        resp.status(200).json({
-            ok: true,
-            eventos: events
-        })
-    } catch (error) {
-        resp.status(500).json({
-            ok: false,
-            msg: "Hable con el administrador"
-        })
-    }
-
-}
-
+		resp.status(200).json({
+			ok: true,
+			eventos: events,
+		});
+	} catch (error) {
+		resp.status(500).json({
+			ok: false,
+			msg: "Hable con el administrador",
+		});
+	}
+};
 
 const createEvent = async (req, resp = response) => {
+	const event = new Event(req.body);
 
-    const event = new Evento(req.body);
+	try {
+		event.user = req.uid;
 
-    try {
-        event.user = req.uid;
+		const eventSaved = await event.save();
 
-        const eventSaved = await event.save();
-
-        resp.status(200).json({
-            ok: true,
-            evento: eventSaved
-        });
-
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json({
-            ok: false,
-            msg: "Hable con el administrador"
-        });
-    }
-
-}
-
+		resp.status(200).json({
+			ok: true,
+			evento: eventSaved,
+		});
+	} catch (error) {
+		console.log(error);
+		resp.status(500).json({
+			ok: false,
+			msg: "Hable con el administrador",
+		});
+	}
+};
 
 const updateEvent = async (req, resp = response) => {
+	const { uid } = req;
+	const eventId = req.params.id;
 
-    const { uid } = req;
-    const eventId = req.params.id;
+	try {
+		const event = await Event.findById(eventId);
 
-    try {
+		if (!event) {
+			return resp.status(404).json({
+				ok: false,
+				msg: "Evento no existe con ese id",
+			});
+		}
 
-        const event = await Evento.findById(eventId);
+		if (event.user.toString() !== uid) {
+			return resp.status(401).json({
+				ok: false,
+				msg: "No tiene privilegio de editar este evento",
+			});
+		}
 
-        if (!event) {
-            return resp.status(404).json({
-                ok: false,
-                msg: "Evento no existe con ese id"
-            });
-        }
+		const newEvent = {
+			...req.body,
+			user: uid,
+		};
 
-        if (event.user.toString() !== uid) {
-            return resp.status(401).json({
-                ok: false,
-                msg: "No tiene privilegio de editar este evento"
-            });
-        }
+		const eventUpdated = await Event.findByIdAndUpdate(eventId, newEvent, {
+			new: true,
+		});
 
-        const newEvent = {
-            ...req.body,
-            user: uid
-        }
-
-        const eventUpdated = await Evento.findByIdAndUpdate(eventId, newEvent, { new: true });
-
-        resp.status(200).json({
-            ok: true,
-            evento: eventUpdated,
-        });
-
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json({
-            ok: false,
-            msg: "Hable con el administrador"
-        });
-    }
-}
+		resp.status(200).json({
+			ok: true,
+			evento: eventUpdated,
+		});
+	} catch (error) {
+		console.log(error);
+		resp.status(500).json({
+			ok: false,
+			msg: "Hable con el administrador",
+		});
+	}
+};
 
 const deleteEvent = async (req, resp = response) => {
+	const { uid } = req;
+	const eventId = req.params.id;
 
-    const { uid } = req;
-    const eventId = req.params.id;
+	try {
+		const event = await Event.findById(eventId);
 
-    try {
+		if (!event) {
+			return resp.status(404).json({
+				ok: false,
+				msg: "No existe un evento con ese id",
+			});
+		}
 
-        const event = await Evento.findById(eventId);
+		if (event.user.toString() !== uid) {
+			return resp.status(400).json({
+				ok: false,
+				msg: " No tiene privilegios para eliminar este evento",
+			});
+		}
 
-        if (!event) {
-            return resp.status(404).json({
-                ok: false,
-                msg: "No existe un evento con ese id",
-            })
-        }
+		await Event.findByIdAndDelete(eventId);
 
-        if (event.user.toString() !== uid) {
-            return resp.status(400).json({
-                ok: false,
-                msg: " No tiene privilegios para eliminar este evento",
-            })
-        }
-
-        await Evento.findByIdAndDelete(eventId);
-
-        resp.status(200).json({
-            ok: true,
-            msg: "Evento eliminado"
-        })
-
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json({
-            ok: false,
-            msg: "Hable con el administrador"
-        })
-    }
-
-}
-
-
+		resp.status(200).json({
+			ok: true,
+			msg: "Evento eliminado",
+		});
+	} catch (error) {
+		console.log(error);
+		resp.status(500).json({
+			ok: false,
+			msg: "Hable con el administrador",
+		});
+	}
+};
 
 module.exports = {
-    createEvent,
-    deleteEvent,
-    getEventos,
-    updateEvent      ,
-}
+	createEvent,
+	deleteEvent,
+	getEvents,
+	updateEvent,
+};

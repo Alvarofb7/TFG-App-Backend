@@ -1,10 +1,10 @@
 const { response } = require("express");
-const Nota = require("../models/Nota");
+const Note = require("../models/Note");
 
 const getNotes = async (req, resp = response) => {
 	try {
 		const { uid } = req;
-		const notes = await Nota.find({ user: uid })
+		const notes = await Note.find({ user: uid })
 			.sort({ date: -1 })
 			.populate("user", "name");
 
@@ -22,7 +22,7 @@ const getNotes = async (req, resp = response) => {
 
 const createNote = async (req, resp = response) => {
 	try {
-		const note = new Nota(req.body);
+		const note = new Note(req.body);
 		note.user = req.uid;
 
 		const noteSaved = await note.save();
@@ -44,7 +44,7 @@ const updateNote = async (req, resp = response) => {
 	try {
 		const { uid } = req;
 		const noteId = req.params.id;
-		const note = await Nota.findById(noteId);
+		const note = await Note.findById(noteId);
 
 		if (!note) {
 			return resp.status(404).json({
@@ -65,7 +65,7 @@ const updateNote = async (req, resp = response) => {
 			user: uid,
 		};
 
-		const noteUpdated = await Nota.findByIdAndUpdate(noteId, newNote, {
+		const noteUpdated = await Note.findByIdAndUpdate(noteId, newNote, {
 			new: true,
 		});
 
@@ -86,7 +86,7 @@ const deleteNote = async (req, resp = response) => {
 	try {
 		const { uid } = req;
 		const noteId = req.params.id;
-		const note = await Nota.findById(noteId);
+		const note = await Note.findById(noteId);
 
 		if (!note) {
 			return resp.status(404).json({
@@ -102,7 +102,7 @@ const deleteNote = async (req, resp = response) => {
 			});
 		}
 
-		await Nota.findByIdAndDelete(noteId);
+		await Note.findByIdAndDelete(noteId);
 
 		resp.status(200).json({
 			ok: true,
