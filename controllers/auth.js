@@ -1,36 +1,36 @@
 const { response } = require("express");
 const bcrypt = require("bcryptjs");
 
-const Usuario = require("../models/Usuario");
+const User = require("../models/User");
 const { generarJWT } = require("../helpers/jwt");
 
-const crearUsuario = async (req, res = response) => {
+const createUser = async (req, res = response) => {
 	const { email, password } = req.body;
 	try {
-		let usuario = await Usuario.findOne({ email });
+		let user = await User.findOne({ email });
 
-		if (usuario) {
+		if (user) {
 			return res.status(400).json({
 				ok: false,
 				msg: "Un usuario ya existe con ese correo",
 			});
 		}
 
-		usuario = new Usuario(req.body);
+		user = new User(req.body);
 
 		//* Encriptar contraseña
 		const salt = bcrypt.genSaltSync();
-		usuario.password = bcrypt.hashSync(password, salt);
+		user.password = bcrypt.hashSync(password, salt);
 
-		await usuario.save();
+		await user.save();
 
 		//* Generar JWT
-		const token = await generarJWT(usuario.id, usuario.name);
+		const token = await generarJWT(user.id, user.name);
 
 		res.status(201).json({
 			ok: true,
-			uid: usuario.id,
-			name: usuario.name,
+			uid: user.id,
+			name: user.name,
 			token,
 		});
 	} catch (error) {
@@ -42,13 +42,13 @@ const crearUsuario = async (req, res = response) => {
 	}
 };
 
-const loginUsuario = async (req, res = response) => {
+const loginUser = async (req, res = response) => {
 	const { email, password } = req.body;
 
 	try {
-		const usuario = await Usuario.findOne({ email });
+		const user = await User.findOne({ email });
 
-		if (!usuario) {
+		if (!user) {
 			return res.status(400).json({
 				ok: false,
 				msg: "Las credenciales no son correctas",
@@ -56,7 +56,7 @@ const loginUsuario = async (req, res = response) => {
 		}
 
 		//* Confirmar los passwords
-		const validPassword = bcrypt.compareSync(password, usuario.password);
+		const validPassword = bcrypt.compareSync(password, user.password);
 
 		if (!validPassword) {
 			return res.status(400).json({
@@ -66,12 +66,12 @@ const loginUsuario = async (req, res = response) => {
 		}
 
 		//* Generar JWT (Json web token)
-		const token = await generarJWT(usuario.id, usuario.name);
+		const token = await generarJWT(user.id, user.name);
 
 		res.status(200).json({
 			ok: true,
-			uid: usuario.id,
-			name: usuario.name,
+			uid: user.id,
+			name: user.name,
 			token,
 		});
 	} catch (error) {
@@ -98,7 +98,7 @@ const revalidarToken = async (req, res = response) => {
 };
 
 module.exports = {
-	crearUsuario,
-	loginUsuario,
+	createUser,
+	loginUser,
 	revalidarToken,
 };

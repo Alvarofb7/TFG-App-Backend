@@ -1,10 +1,10 @@
 const { response } = require("express");
-const Tarea = require("../models/Tarea");
+const Task = require("../models/Task");
 
 const getTasks = async (req, resp = response) => {
 	try {
 		const { uid } = req;
-		const tasks = await Tarea.find({ user: uid }).populate("user", "name");
+		const tasks = await Task.find({ user: uid }).populate("user", "name");
 
 		resp.status(200).json({
 			ok: true,
@@ -20,7 +20,7 @@ const getTasks = async (req, resp = response) => {
 
 const createTask = async (req, resp = response) => {
 	try {
-		const task = new Tarea(req.body);
+		const task = new Task(req.body);
 		task.user = req.uid;
 
 		const taskSaved = await task.save();
@@ -42,7 +42,7 @@ const updateTask = async (req, resp = response) => {
 		const { uid } = req;
 		const taskId = req.params.id;
 
-		const task = await Tarea.findById(taskId);
+		const task = await Task.findById(taskId);
 
 		if (!task) {
 			return resp.status(404).json({
@@ -63,7 +63,7 @@ const updateTask = async (req, resp = response) => {
 			user: uid,
 		};
 
-		const taskUpdated = await Tarea.findByIdAndUpdate(taskId, newTask, {
+		const taskUpdated = await Task.findByIdAndUpdate(taskId, newTask, {
 			new: true,
 		});
 
@@ -84,7 +84,7 @@ const deleteTask = async (req, resp = response) => {
 	try {
 		const { uid } = req;
 		const taskId = req.params.id;
-		const task = await Tarea.findById(taskId);
+		const task = await Task.findById(taskId);
 
 		if (!task) {
 			return resp.status(404).json({
@@ -100,7 +100,7 @@ const deleteTask = async (req, resp = response) => {
 			});
 		}
 
-		await Tarea.findByIdAndDelete(taskId);
+		await Task.findByIdAndDelete(taskId);
 
 		resp.status(200).json({
 			ok: true,
@@ -119,11 +119,11 @@ const deleteAllTasksInDone = async (req, resp = response) => {
 	try {
 		const { uid } = req;
 
-		const tasksDone = await Tarea.find({ user: uid, status: "Done" });
+		const tasksDone = await Task.find({ user: uid, status: "Terminado" });
 		if (tasksDone.length === 0) {
 			return resp.status(404).json({
 				ok: false,
-				msg: "No existen tareas con status 'Done'",
+				msg: "No existen tareas con status 'Terminado'",
 			});
 		}
 
@@ -136,11 +136,11 @@ const deleteAllTasksInDone = async (req, resp = response) => {
 			}
 		});
 
-		await Tarea.deleteMany({ user: uid, status: "Done" });
+		await Task.deleteMany({ user: uid, status: "Terminado" });
 
 		resp.status(200).json({
 			ok: true,
-			msg: "Notas con status 'Done' eliminadas",
+			msg: "Notas con status 'Terminado' eliminadas",
 		});
 	} catch (error) {
 		console.log(error);

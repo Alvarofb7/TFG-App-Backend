@@ -17,7 +17,7 @@ const {
 	deleteAllTasksInDone,
 } = require("../controllers/kanban");
 
-const statusValues = ["To Do", "In Progress", "Done"];
+const statusValues = ["Pendiente", "En progreso", "Terminado"];
 
 const router = Router();
 
