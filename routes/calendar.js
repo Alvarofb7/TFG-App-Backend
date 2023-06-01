@@ -28,7 +28,7 @@ router.post(
 	[
 		check("title", "El título es obligatorio").not().isEmpty(),
 		check("notes", "La nota no puede tener más de 50 caracteres").isLength({
-			max: 50,
+			max: 100,
 		}),
 		check("start", "Fecha de inicio es obligatoria").custom(isDate),
 		check("end", "Fecha de fin es obligatoria").custom(isDate),
