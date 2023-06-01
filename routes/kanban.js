@@ -58,8 +58,8 @@ router.put(
 			.withMessage("El estado tiene que ser de un valor permitido"),
 		check(
 			"description",
-			"La nota no puede tener más de 500 caracteres"
-		).isLength({ max: 500 }),
+			"La nota no puede tener más de 200 caracteres"
+		).isLength({ max: 200 }),
 		check("finish", "La fecha es obligatoria").custom(isDate),
 		validarCampos,
 	],
