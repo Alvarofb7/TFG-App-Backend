@@ -7,11 +7,7 @@ const isDate = (value, args) => {
 
 	const fecha = moment(value);
 
-	if (fecha.isValid) {
-		return true;
-	} else {
-		return false;
-	}
+	return fecha.isValid;
 };
 
 module.exports = {
